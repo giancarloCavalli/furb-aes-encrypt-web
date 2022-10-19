@@ -49,6 +49,12 @@ button:hover {
   background-color: rgba(16, 164, 190, 0.763);
 }
 
+input {
+  padding: 0.3rem;
+  border-radius: 0.4rem;
+  width: 350px;
+}
+
 .text-area {
   width: 80%;
   height: 30vh;
