@@ -49,6 +49,10 @@ button:hover {
   background-color: rgba(16, 164, 190, 0.763);
 }
 
+#log-aes-button {
+  background-color: rgba(9, 173, 58, 0.763);
+}
+
 input {
   padding: 0.3rem;
   border-radius: 0.4rem;

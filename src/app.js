@@ -1,6 +1,3 @@
-const textAreaInput = document.getElementById('text-area-input')
-const keyInput = document.getElementById('key-input')
-
 //https://stackoverflow.com/questions/13405129/create-and-save-a-file-with-javascript
 function download(data, type) {
   if (isDownloadReady() === false) {
