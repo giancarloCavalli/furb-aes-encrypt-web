@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <title>AES Encryption</title>
+</head>
+<body>
+  <h1>AES Encryption</h1>
+  <div class="section">
+    <h2>Selecione um arquivo</h2>
+    <div>
+      <button id="open-file-button" onclick="openFile()">Ler Arquivo</button>
+    </div>
+    <h2>Conteúdo</h2>
+    <Textarea id="text-area-input" class="text-area"></Textarea>
+  </div>
+
+  <div class="section">
+    <button id="save-file-button" onclick="download('conteudo', 'txt')">Salvar Arquivo</button>
+  </div>
+</body>
+<script src="./app.js"></script>
+</html>
