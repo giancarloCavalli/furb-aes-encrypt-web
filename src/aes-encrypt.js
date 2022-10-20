@@ -3,14 +3,16 @@
 // a key schedule é composta de 11 round keys de 4 words. A original + 10 derivadas
 
 function generateFirstRoundKeyWord() {
-  const fullWordByteArray = keyInput.value.split(',')
+  let fullWordByteArray = keyInput.value.split(',')
 
-  let [wordByteArray1, wordByteArray2, wordByteArray3, wordByteArray4] = getRoundKey(fullWordByteArray)
+  let [wordByteArray0, wordByteArray1, wordByteArray2, wordByteArray3] = getRoundKey(fullWordByteArray)
 
-  console.log(wordByteArray1)
-  console.log(wordByteArray2)
-  console.log(wordByteArray3)
-  console.log(wordByteArray4)
+  let copywordByteArray3 = wordByteArray3.map(x => x)
+
+  copywordByteArray3 = rotateBytes(copywordByteArray3)
+
+  console.log('w3', wordByteArray3)
+  console.log('w4', copywordByteArray3)
 }
 
 function getRoundKey(fullWordByteArray) {
@@ -24,7 +26,11 @@ function getRoundKey(fullWordByteArray) {
 }
 
 function rotateBytes(wordByteArray) {
+  const byte = wordByteArray.shift()
 
+  wordByteArray.push(byte)
+
+  return wordByteArray
 }
 
 function substituteBytes(wordByteArray) {
