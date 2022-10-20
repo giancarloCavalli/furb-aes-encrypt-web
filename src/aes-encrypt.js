@@ -3,37 +3,43 @@
 // a key schedule é composta de 11 round keys de 4 words. A original + 10 derivadas
 
 function generateFirstRoundKeyWord() {
-  let fullWordByteArray = keyInput.value.split(',')
+  let fullWordArray = keyInput.value.split(',')
 
-  let [wordByteArray0, wordByteArray1, wordByteArray2, wordByteArray3] = getRoundKey(fullWordByteArray)
+  let [wordArray0, wordArray1, wordArray2, wordArray3] = getRoundKey(fullWordArray)
 
-  let copywordByteArray3 = wordByteArray3.map(x => x)
+  let copywordArray3 = wordArray3.map(x => x)
 
-  copywordByteArray3 = rotateBytes(copywordByteArray3)
+  const wordArray3Rotated = getRotatedBytes(copywordArray3)
 
-  console.log('01', S_BOX['01'])
+  const wordInHexArray3Rotated = wordArray3Rotated.map(byte => getHexString(byte))
+
+  console.log('wordInHexArray3Rotated', wordInHexArray3Rotated)
+  
+  const wordInHexArray3RotatedAndSBoxed = getSubstitutedBytes(wordInHexArray3Rotated)
+
+  console.log('wordInHexArray3RotatedAndSBoxed', wordInHexArray3RotatedAndSBoxed)
 }
 
-function getRoundKey(fullWordByteArray) {
-  let wordByteArray = []
+function getRoundKey(fullWordArray) {
+  let wordArray = []
 
-  while(fullWordByteArray.length > 0) {
-    wordByteArray.push(fullWordByteArray.splice(0, 4))
+  while(fullWordArray.length > 0) {
+    wordArray.push(fullWordArray.splice(0, 4))
   }
 
-  return [...wordByteArray]
+  return [...wordArray]
 }
 
-function rotateBytes(wordByteArray) {
-  const byte = wordByteArray.shift()
+function getRotatedBytes(wordArray) {
+  const byte = wordArray.shift()
 
-  wordByteArray.push(byte)
+  wordArray.push(byte)
 
-  return wordByteArray
+  return wordArray
 }
 
-function substituteBytes(wordByteArray) {
-
+function getSubstitutedBytes(wordInHexArray) {
+  return wordInHexArray.map(byte => S_BOX[byte])
 }
 
 function generateRoundConstant(wordByteArray) {
