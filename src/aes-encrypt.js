@@ -2,35 +2,63 @@
 // Key schedule = array contendo todas as round keys
 // a key schedule é composta de 11 round keys de 4 words. A original + 10 derivadas
 
-function generateFirstRoundKeyWord() {
+function generateKey() {
   let fullWordArray = keyInput.value.split(',')
+  
+  const key = {}
+  
+  let roundKey0 = getFirstRoundKey(fullWordArray)
 
-  let [wordArray0, wordArray1, wordArray2, wordArray3] = getRoundKey(fullWordArray)
-
-  let copywordArray3 = wordArray3.map(x => x)
-
-  const wordArray3Rotated = getRotatedBytes(copywordArray3)
-
-  const wordInHexArray3Rotated = wordArray3Rotated.map(byte => getHexString(byte))
-
-  const wordInHexArray3RotatedAndSBoxed = getSubstitutedBytes(wordInHexArray3Rotated)
-
+  key['w0'] = roundKey0
+  
+  let i = 1
+  
   const roundConstantWords = generateRoundConstantWords()
-
-  const array1 = ["41", "42", "43", "44"]
-  const array2 = ["2e", "84", "53", "e3"]
-
-  console.log(getXorInHexArrayBetween(array1, array2))
-}
-
-function getRoundKey(fullWordArray) {
-  let wordArray = []
-
-  while(fullWordArray.length > 0) {
-    wordArray.push(fullWordArray.splice(0, 4))
+  
+  while (i <= 10) {
+    const copyOfLastWordFromPreviousRoundKey = key[`w${i-1}`][3].map(byteInHex => byteInHex)
+    const copyOfFirstWordFromPreviousRoundKey = key[`w${i-1}`][0].map(byteInHex => byteInHex)
+    const firstWord = getFirstWord(copyOfLastWordFromPreviousRoundKey, roundConstantWords[i], copyOfFirstWordFromPreviousRoundKey)
+    
+    const previousRoundKey = key[`w${i-1}`]
+    
+    key[`w${i}`] = getRoundKey(firstWord, previousRoundKey)
+    
+    i++
   }
 
-  return [...wordArray]
+  console.log('key', key)
+}
+
+function getFirstWord(lastWordPrevRoundKey, roundConstantWord, firstWordPrevRoundKey) {
+  const rotatedWord = getRotatedBytes(lastWordPrevRoundKey)
+  const substituteSBoxWord = getSubstitutedBytes(rotatedWord)
+
+  const xorSubstitutedWordAndRoundConstant = getXorInHexArrayBetween(substituteSBoxWord, roundConstantWord)
+  
+  const xorWithFirstWordPrevRoundKey = getXorInHexArrayBetween(xorSubstitutedWordAndRoundConstant, firstWordPrevRoundKey)
+
+  return xorWithFirstWordPrevRoundKey
+}
+
+function getFirstRoundKey(fullWordArray) {
+  let wordInHexArray = []
+
+  while(fullWordArray.length > 0) {
+    const wordInDecArray = fullWordArray.splice(0, 4)
+
+    wordInHexArray.push(wordInDecArray.map(byteInDecimal => getHexString(byteInDecimal)))
+  }
+
+  return wordInHexArray
+}
+
+function getRoundKey(firstWord, previousRoundKey) {
+  const secondWord = getXorInHexArrayBetween(previousRoundKey[1], firstWord)
+  const thirdWord = getXorInHexArrayBetween(previousRoundKey[2], secondWord)
+  const fourthWord = getXorInHexArrayBetween(previousRoundKey[3], thirdWord)
+
+  return [firstWord, secondWord, thirdWord, fourthWord]
 }
 
 function getRotatedBytes(wordArray) {
