@@ -11,8 +11,8 @@ function generateFirstRoundKeyWord() {
 
   copywordByteArray3 = rotateBytes(copywordByteArray3)
 
-  console.log('w3', wordByteArray3)
-  console.log('w4', copywordByteArray3)
+  console.log('A', getHexString('A'))
+  console.log('12', getHexString('12'))
 }
 
 function getRoundKey(fullWordByteArray) {
@@ -43,4 +43,25 @@ function generateRoundConstant(wordByteArray) {
 
 function doXorBetween(wordByteArray1, wordByteArray2) {
 
+}
+
+function getHexString(numberInStringOrChar) {
+  let hexString
+
+  if (isNaN(numberInStringOrChar)) {
+    const char = numberInStringOrChar
+    const asciiValue = char.charCodeAt(0)
+    hexString = asciiValue.toString(16)
+  } else {
+    const number = parseInt(numberInStringOrChar)
+    hexString = number.toString(16)
+  }
+
+  return padTwoZeroes(hexString)
+}
+
+function padTwoZeroes(number) {
+  const zeroFilled = ('00'+number).slice(-2)
+
+  return zeroFilled
 }
