@@ -16,16 +16,16 @@
       <button id="open-file-button" onclick="openFile()">Ler Arquivo</button>
     </div>
     <h2>Conteúdo</h2>
-    <Textarea id="text-area-input" class="text-area"></Textarea>
+    <textarea id="text-area-input" class="text-area">DESENVOLVIMENTO</textarea> <!-- TODO remover valor fixo-->
   </div>
 
   <div class="section">
     <label for="key-input">
       Chave da criptografia:
-      <input type="text" id="key-input" name="key-input" value="20,1,94,33,199,0,48,9,31,94,112,40,59,30,100,248"> <!-- TODO remover valor fixo-->
+      <input type="text" id="key-input" name="key-input" value="A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P"> <!-- TODO remover valor fixo-->
     </label>
     <button id="save-file-button" onclick="download('conteudo', 'txt')">Salvar Arquivo</button>
-    <button id="log-aes-button" onclick="generateKey()">Log AES</button>
+    <button id="log-aes-button">Log AES</button>
   </div>
 </body>
 <script src="./global-vars.js"></script>

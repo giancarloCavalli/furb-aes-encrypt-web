@@ -2,6 +2,12 @@
 // Key schedule = array contendo todas as round keys
 // a key schedule é composta de 11 round keys de 4 words. A original + 10 derivadas
 
+function encrypt(textAreaValue) {
+  generateKey()
+
+  console.log(textAreaValue)
+}
+
 function generateKey() {
   let fullWordArray = keyInput.value.split(',')
   
