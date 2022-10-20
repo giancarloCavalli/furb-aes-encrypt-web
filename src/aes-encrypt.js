@@ -15,8 +15,12 @@ function generateFirstRoundKeyWord() {
 
   const wordInHexArray3RotatedAndSBoxed = getSubstitutedBytes(wordInHexArray3Rotated)
 
-  console.log('generateRoundConstantWord', generateRoundConstantWord())
+  const roundConstantWords = generateRoundConstantWords()
 
+  const array1 = ["41", "42", "43", "44"]
+  const array2 = ["2e", "84", "53", "e3"]
+
+  console.log(getXorInHexArrayBetween(array1, array2))
 }
 
 function getRoundKey(fullWordArray) {
@@ -41,12 +45,40 @@ function getSubstitutedBytes(wordInHexArray) {
   return wordInHexArray.map(byte => S_BOX[byte])
 }
 
-function generateRoundConstant(wordByteArray) {
+function generateRoundConstantWords() {
+  let roundConstantWords = {}
 
+  let wordIndex = 1
+  let pow = 0
+  let value
+
+  while (wordIndex <= 10) {
+    value = Math.pow(2, pow)
+
+    while(value > 255) {
+      value -= (256 - 27)
+    }
+
+    roundConstantWords[wordIndex] = [getHexString(value), 0, 0, 0]
+
+    wordIndex++
+    pow++
+  }
+
+  return roundConstantWords
 }
 
-function doXorBetween(wordByteArray1, wordByteArray2) {
+function getXorInHexArrayBetween(wordInHexArray1, wordInHexArray2) {
+  let xorWordInHexArray = []
 
+  for (let i = 0; i < wordInHexArray1.length; i++) {
+    const byte1InDecimalInt = parseInt(wordInHexArray1[i], 16);
+    const byte2InDecimalInt = parseInt(wordInHexArray2[i], 16);
+
+    xorWordInHexArray.push(getHexString(byte1InDecimalInt ^ byte2InDecimalInt))
+  }
+
+  return xorWordInHexArray
 }
 
 function getHexString(numberInStringOrChar) {
@@ -87,27 +119,4 @@ const S_BOX = {
   'd0': '70', 'd1': '3e', 'd2': 'b5', 'd3': '66', 'd4': '48', 'd5': '03', 'd6': 'f6', 'd7': '0e', 'd8': '61', 'd9': '35', 'da': '57', 'db': 'b9', 'dc': '86', 'dd': 'c1', 'de': '1d', 'df': '9e',
   'e0': 'e1', 'e1': 'f8', 'e2': '98', 'e3': '11', 'e4': '69', 'e5': 'd9', 'e6': '8e', 'e7': '94', 'e8': '9b', 'e9': '1e', 'ea': '87', 'eb': 'e9', 'ec': 'ce', 'ed': '55', 'ee': '28', 'ef': 'df',
   'f0': '8c', 'f1': 'a1', 'f2': '89', 'f3': '0d', 'f4': 'bf', 'f5': 'e6', 'f6': '42', 'f7': '68', 'f8': '41', 'f9': '99', 'fa': '2d', 'fb': '0f', 'fc': 'b0', 'fd': '54', 'fe': 'bb', 'ff': '16'
-}
-
-function generateRoundConstantWord() {
-  let roundConstantWords = {}
-
-  let wordIndex = 1
-  let pow = 0
-  let value
-
-  while (wordIndex <= 10) {
-    value = Math.pow(2, pow)
-
-    while(value > 255) {
-      value -= (256 - 27)
-    }
-
-    roundConstantWords[wordIndex] = [getHexString(value), 0, 0, 0]
-
-    wordIndex++
-    pow++
-  }
-
-  return roundConstantWords
 }
