@@ -1,7 +1,7 @@
 function generateFirstRoundKeyWord() {
   const fullWordByteArray = keyInput.value.split(',')
 
-  let [wordByteArray1, wordByteArray2, wordByteArray3, wordByteArray4,] = getWords(fullWordByteArray)
+  let [wordByteArray1, wordByteArray2, wordByteArray3, wordByteArray4] = getWords(fullWordByteArray)
 
   console.log(wordByteArray1)
   console.log(wordByteArray2)
