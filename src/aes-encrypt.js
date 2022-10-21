@@ -112,14 +112,20 @@ function getMixColumnsMatrix(twoLevelArrayOfBytesInHex) {
   return resultMatrix
 }
 
-function getMult(textHex, multMatrixHex) {
-  if (textHex.includes('0')) return E_TABLE['00']
+function getMult(hex1, hex2) {
+  if (parseInt(hex1, 16) === 0 || parseInt(hex2, 16) === 0) {
+    return '00'
+  }
 
-  if (textHex.includes('1')) return E_TABLE['01']
+  if (parseInt(hex1, 16) === 1) {
+    return hex2
+  } else if (parseInt(hex2, 16) === 1) {
+    return hex1
+  }
   
-  const rTimesMatrix = sumHexString(L_TABLE[textHex], L_TABLE[multMatrixHex])
+  const rTimesMatrix = sumHexString(L_TABLE[hex1], L_TABLE[hex2])
 
-  // console.log('textHex', textHex)
+  // console.log('hex1', hex1)
   // console.log('rTimesMatrix', rTimesMatrix)
   // console.log('E_TABLE[rTimesMatrix]', E_TABLE[rTimesMatrix])
 
