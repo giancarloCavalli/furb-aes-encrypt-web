@@ -11,9 +11,46 @@ function encrypt(textAreaValue, keyRawValue) {
 
   const xorTextAndFirstRoundKey16ByteInHexArray = getXorBetweenTextAndRoundKey(textInHexArray, key['rk0'])
   
-  const substitutedTextBytesInHexTwoLevelArray = getSubstitutedBytesInTwoLevelArray(xorTextAndFirstRoundKey16ByteInHexArray)
+  let substitutedTextBytesInHexTwoLevelArray = getSubstitutedBytesInTwoLevelArray(xorTextAndFirstRoundKey16ByteInHexArray)
   
-  console.log(substitutedTextBytesInHexTwoLevelArray)
+  console.log('original', substitutedTextBytesInHexTwoLevelArray)
+
+  //ATTENTION cause from this point forward the columns and lines are inverted!
+  console.log(getShiftRows(substitutedTextBytesInHexTwoLevelArray))
+}
+
+function getShiftRows(twoLevelArrayOfBytesInHex) {
+  // reestructured the matrix to do the shift rows
+  let invertedTwoLevelArrayOfBytesInHex = getSameWithInvertedColsAndRows(twoLevelArrayOfBytesInHex)
+
+  const shifted = invertedTwoLevelArrayOfBytesInHex.map((byteArrayInHex, index) => {
+    while (index > 0) {
+      const byteInHex = byteArrayInHex.shift()
+      byteArrayInHex.push(byteInHex)
+
+      index--
+    }
+
+    return byteArrayInHex
+  })
+
+  return shifted
+}
+
+function getSameWithInvertedColsAndRows(twoLevelArrayOfBytesInHex) {
+  let lineOrderedArray = []
+  
+  for (let x = 0; x < twoLevelArrayOfBytesInHex.length; x++) {
+    let array = []
+    for (let y = 0; y < twoLevelArrayOfBytesInHex.length; y++) {
+
+      array.push(twoLevelArrayOfBytesInHex[y][x])
+
+    }
+    lineOrderedArray.push(array)
+  }
+
+  return lineOrderedArray
 }
 
 function getSubstitutedBytesInTwoLevelArray(twoLevelArrayOfBytesInHex) {
