@@ -9,21 +9,33 @@ function encrypt(textAreaValue, keyRawValue) {
 
   const textInHexArray = get16ByteMatrixInColumnsArray(sixteenCharArray)
 
-  const xorTextAndFirstRoundKey16ByteInHexArray = getXorBetweenTextAndRoundKey(textInHexArray, key['rk0'])
+  const xorTextAndFirstRoundKey16ByteInHexArray = getXorBetween16ByteTwoLevelArrays(textInHexArray, key['rk0'])
   
   let substitutedTextBytesInHexTwoLevelArray = getSubstitutedBytesInTwoLevelArray(xorTextAndFirstRoundKey16ByteInHexArray)
   
   //ATTENTION cause from this point forward the columns and lines are inverted!
   const textBytesInHexShiftedRowsInverted = getShiftRows(substitutedTextBytesInHexTwoLevelArray)
   
-  console.log('textBytesInHexShiftedRowsInverted', textBytesInHexShiftedRowsInverted)
-  
   //ATTENTION backverted
   const textBytesInHexShiftedRows = getSameWithInvertedColsAndRows(textBytesInHexShiftedRowsInverted)
 
-  console.log('textBytesInHexShiftedRows', textBytesInHexShiftedRows)
+  let mixColumnsMatrix = getMixColumnsMatrix(textBytesInHexShiftedRows)
+  
+  console.log('key', key)
 
-  console.log('Mix Columns com ordenação de acordo', getSameWithInvertedColsAndRows(getMixColumnsMatrix(textBytesInHexShiftedRows)))
+  console.log('Finale with correct order', getSameWithInvertedColsAndRows(getXorMixCollumnsAndRoundKeys(mixColumnsMatrix, key)))
+}
+
+function getXorMixCollumnsAndRoundKeys(mixColumnsMatrix, keyTwoLevelArray) {
+  let i = 0
+  while (i <= 10) {
+    const roundKey = keyTwoLevelArray[`rk${i}`]
+    mixColumnsMatrix = getXorBetween16ByteTwoLevelArrays(mixColumnsMatrix,roundKey)
+
+    i++
+  }
+
+  return mixColumnsMatrix
 }
 
 function getShiftRows(twoLevelArrayOfBytesInHex) {
@@ -125,6 +137,7 @@ function getMult(hex1, hex2) {
   
   const rTimesMatrix = sumHexString(L_TABLE[hex1], L_TABLE[hex2])
 
+  // uncomment for better debugging
   // console.log('hex1', hex1)
   // console.log('rTimesMatrix', rTimesMatrix)
   // console.log('E_TABLE[rTimesMatrix]', E_TABLE[rTimesMatrix])
@@ -167,17 +180,17 @@ function getSubstitutedBytesInTwoLevelArray(twoLevelArrayOfBytesInHex) {
   })
 }
 
-function getXorBetweenTextAndRoundKey(text16ByteInHexArray, roundKey) {
-  let xorTextAndFirstRoundKey16ByteInHexArray = []
+function getXorBetween16ByteTwoLevelArrays(byteTwoLevelArray1, byteTwoLevelArray2) {
+  let xorTwoLevelArray = []
   
-  for (let i = 0; i < text16ByteInHexArray.length; i++) {
-    const textByteInHexColumn = text16ByteInHexArray[i];
-    const keyByteInHexColumn = roundKey[i];
+  for (let i = 0; i < byteTwoLevelArray1.length; i++) {
+    const hex1 = byteTwoLevelArray1[i];
+    const hex2 = byteTwoLevelArray2[i];
     
-    xorTextAndFirstRoundKey16ByteInHexArray.push(getXorInHexArrayBetween(textByteInHexColumn, keyByteInHexColumn))
+    xorTwoLevelArray.push(getXorInHexArrayBetween(hex1, hex2))
   }
 
-  return xorTextAndFirstRoundKey16ByteInHexArray
+  return xorTwoLevelArray
 }
 
 function generateKey(keyRawValue) {
