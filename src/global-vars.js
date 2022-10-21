@@ -3,4 +3,4 @@ const keyInput = document.getElementById('key-input')
 
 const logButton = document.getElementById('log-aes-button')
 
-logButton.setAttribute('onclick', 'logAes()')
+logButton.setAttribute('onclick', 'logAes(keyInput.value)')

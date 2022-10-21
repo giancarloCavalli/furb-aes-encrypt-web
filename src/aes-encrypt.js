@@ -376,7 +376,8 @@ const E_TABLE = {
   'f0': '39', 'f1': '4b', 'f2': 'dd', 'f3': '7c', 'f4': '84', 'f5': '97', 'f6': 'a2', 'f7': 'fd', 'f8': '1c', 'f9': '24', 'fa': '6c', 'fb': 'b4', 'fc': 'c7', 'fd': '52', 'fe': 'f6', 'ff': '01'
 }
 
-function logAes() {
+function logAes(keyRawValue) {
+  console.log('key', generateKey(keyRawValue))
   console.log('Finale', getSameWithInvertedColsAndRows(encrypt(textAreaInput.value, keyInput.value)))
 }
 
