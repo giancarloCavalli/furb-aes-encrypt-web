@@ -23,7 +23,7 @@ function encrypt(textAreaValue, keyRawValue) {
 
   console.log('textBytesInHexShiftedRows', textBytesInHexShiftedRows)
 
-  console.log(getMixColumnsMatrix(textBytesInHexShiftedRows))
+  console.log('Mix Columns com ordenação de acordo', getSameWithInvertedColsAndRows(getMixColumnsMatrix(textBytesInHexShiftedRows)))
 }
 
 function getShiftRows(twoLevelArrayOfBytesInHex) {
@@ -48,9 +48,11 @@ function getMixColumnsMatrix(twoLevelArrayOfBytesInHex) {
   //TODO Ajustar mix columns com a inclusao da E Table no processo
   let resultMatrix = []
   for (let x = 0; x < twoLevelArrayOfBytesInHex.length; x++) {
+
     let r0
     let r1
     let i = 1
+
     let xor00
     let xor01
     let xor10
@@ -59,6 +61,7 @@ function getMixColumnsMatrix(twoLevelArrayOfBytesInHex) {
     let xor21
     let xor30
     let xor31
+
     let firstB
     let secondB
     let thirdB
@@ -68,17 +71,32 @@ function getMixColumnsMatrix(twoLevelArrayOfBytesInHex) {
       if (i === 1) {
         r0 = twoLevelArrayOfBytesInHex[x][i-1]
         r1 = twoLevelArrayOfBytesInHex[x][i]
-        xor00 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[0][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[0][i]]))
-        xor10 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[1][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[1][i]]))
-        xor20 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[2][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[2][i]]))
-        xor30 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[3][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[3][i]]))
+
+        r0TimesMatrix0 = getMult(r0, MULT_MATRIX[0][i-1])
+        r1TimesMatrix0 = getMult(r1, MULT_MATRIX[0][i])
+
+        r0TimesMatrix1 = getMult(r0, MULT_MATRIX[1][i-1])
+        r1TimesMatrix1 = getMult(r1, MULT_MATRIX[1][i])
+
+        r0TimesMatrix2 = getMult(r0, MULT_MATRIX[2][i-1])
+        r1TimesMatrix2 = getMult(r1, MULT_MATRIX[2][i])
+
+        r0TimesMatrix3 = getMult(r0, MULT_MATRIX[3][i-1])
+        r1TimesMatrix3 = getMult(r1, MULT_MATRIX[3][i])
+
+        xor00 = getXorBetweenHexStrings(r0TimesMatrix0, r1TimesMatrix0)
+        xor10 = getXorBetweenHexStrings(r0TimesMatrix1, r1TimesMatrix1)
+        xor20 = getXorBetweenHexStrings(r0TimesMatrix2, r1TimesMatrix2)
+        xor30 = getXorBetweenHexStrings(r0TimesMatrix3, r1TimesMatrix3)
+
       } else if (i === 3) {        
         r0 = twoLevelArrayOfBytesInHex[x][i-1]
         r1 = twoLevelArrayOfBytesInHex[x][i]
-        xor01 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[0][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[0][i]]))
-        xor11 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[1][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[1][i]]))
-        xor21 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[2][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[2][i]]))
-        xor31 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[3][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[3][i]]))
+
+        xor01 = getXorBetweenHexStrings(getMult(r0, MULT_MATRIX[0][i-1]), getMult(r1, MULT_MATRIX[0][i]))
+        xor11 = getXorBetweenHexStrings(getMult(r0, MULT_MATRIX[1][i-1]), getMult(r1, MULT_MATRIX[1][i]))
+        xor21 = getXorBetweenHexStrings(getMult(r0, MULT_MATRIX[2][i-1]), getMult(r1, MULT_MATRIX[2][i]))
+        xor31 = getXorBetweenHexStrings(getMult(r0, MULT_MATRIX[3][i-1]), getMult(r1, MULT_MATRIX[3][i]))
         
         firstB = getXorBetweenHexStrings(xor00, xor01)
         secondB = getXorBetweenHexStrings(xor10, xor11)
@@ -89,13 +107,23 @@ function getMixColumnsMatrix(twoLevelArrayOfBytesInHex) {
       i++
     }
     resultMatrix.push([firstB, secondB, thirdB, fourthB])
-    // console.log('firstB', firstB)
-    // console.log('secondB', secondB)
-    // console.log('thirdB', thirdB)
-    // console.log('fourthB', fourthB)
   }
 
   return resultMatrix
+}
+
+function getMult(textHex, multMatrixHex) {
+  if (textHex.includes('0')) return E_TABLE['00']
+
+  if (textHex.includes('1')) return E_TABLE['01']
+  
+  const rTimesMatrix = sumHexString(L_TABLE[textHex], L_TABLE[multMatrixHex])
+
+  // console.log('textHex', textHex)
+  // console.log('rTimesMatrix', rTimesMatrix)
+  // console.log('E_TABLE[rTimesMatrix]', E_TABLE[rTimesMatrix])
+
+  return E_TABLE[rTimesMatrix]
 }
 
 function sumHexString(hex1, hex2) {
