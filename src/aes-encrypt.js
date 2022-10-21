@@ -21,9 +21,7 @@ function encrypt(textAreaValue, keyRawValue) {
 
   let mixColumnsMatrix = getMixColumnsMatrix(textBytesInHexShiftedRows)
   
-  console.log('key', key)
-
-  console.log('Finale with correct order', getSameWithInvertedColsAndRows(getXorMixCollumnsAndRoundKeys(mixColumnsMatrix, key)))
+  return getXorMixCollumnsAndRoundKeys(mixColumnsMatrix, key)
 }
 
 function getXorMixCollumnsAndRoundKeys(mixColumnsMatrix, keyTwoLevelArray) {
@@ -156,22 +154,6 @@ function sumHexString(hex1, hex2) {
   }
 
   return getHexString(`${result}`)
-}
-
-function getSameWithInvertedColsAndRows(twoLevelArrayOfBytesInHex) {
-  let lineOrderedArray = []
-  
-  for (let x = 0; x < twoLevelArrayOfBytesInHex.length; x++) {
-    let array = []
-    for (let y = 0; y < twoLevelArrayOfBytesInHex.length; y++) {
-
-      array.push(twoLevelArrayOfBytesInHex[y][x])
-
-    }
-    lineOrderedArray.push(array)
-  }
-
-  return lineOrderedArray
 }
 
 function getSubstitutedBytesInTwoLevelArray(twoLevelArrayOfBytesInHex) {
@@ -392,4 +374,40 @@ const E_TABLE = {
   'd0': '45', 'd1': 'cf', 'd2': '4a', 'd3': 'de', 'd4': '79', 'd5': '8b', 'd6': '86', 'd7': '91', 'd8': 'a8', 'd9': 'e3', 'da': '3e', 'db': '42', 'dc': 'c6', 'dd': '51', 'de': 'f3', 'df': '0e',
   'e0': '12', 'e1': '36', 'e2': '5a', 'e3': 'ee', 'e4': '29', 'e5': '7b', 'e6': '8d', 'e7': '8c', 'e8': '8f', 'e9': '8a', 'ea': '85', 'eb': '94', 'ec': 'a7', 'ed': 'f2', 'ee': '0d', 'ef': '17',
   'f0': '39', 'f1': '4b', 'f2': 'dd', 'f3': '7c', 'f4': '84', 'f5': '97', 'f6': 'a2', 'f7': 'fd', 'f8': '1c', 'f9': '24', 'fa': '6c', 'fb': 'b4', 'fc': 'c7', 'fd': '52', 'fe': 'f6', 'ff': '01'
+}
+
+function logAes() {
+  console.log('Finale', getSameWithInvertedColsAndRows(encrypt(textAreaInput.value, keyInput.value)))
+}
+
+function getSameWithInvertedColsAndRows(twoLevelArrayOfBytesInHex) {
+  let lineOrderedArray = []
+  
+  for (let x = 0; x < twoLevelArrayOfBytesInHex.length; x++) {
+    let array = []
+    for (let y = 0; y < twoLevelArrayOfBytesInHex.length; y++) {
+
+      array.push(twoLevelArrayOfBytesInHex[y][x])
+
+    }
+    lineOrderedArray.push(array)
+  }
+
+  return lineOrderedArray
+}
+
+function getCypher(textAreaValue, keyRawValue) {
+  const matrix = encrypt(textAreaValue, keyRawValue)
+  
+  let cypherText = ''
+
+  matrix.forEach(hexArray => {
+    hexArray.forEach(hex => {
+      cypherText = cypherText.concat(hex)
+    })
+  })
+
+  console.log('cypherText', cypherText)
+
+  return cypherText
 }

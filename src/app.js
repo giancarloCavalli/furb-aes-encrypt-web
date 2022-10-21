@@ -1,26 +1,40 @@
 //https://stackoverflow.com/questions/13405129/create-and-save-a-file-with-javascript
-function download(data, type) {
+async function download(content) {
   if (isDownloadReady() === false) {
     alert("Informe a chave de criptografia para prosseguir com o download do arquivo cifrado!")
 
     return
   }
 
-  const file = new Blob([data], {type: type});
-  if (window.navigator.msSaveOrOpenBlob) // IE10+
-      window.navigator.msSaveOrOpenBlob(file, '');
-  else { // Others
-      const a = document.createElement("a"),
-      url = URL.createObjectURL(file);
-      a.href = url;
-      a.download = '';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function() {
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);  
-      }, 0); 
-  }
+  const fileHandle = await getNewFileHandle()
+
+  await writeFile(fileHandle, content)
+}
+
+async function getNewFileHandle() {
+  const options = {
+    suggestedName: 'aes-encrypt.txt', 
+    types: [
+      {
+        description: 'Text Files',
+        accept: {
+          'text/plain': ['.txt'],
+        },
+      },
+    ],
+  };
+  const handle = await window.showSaveFilePicker(options);
+  return handle;
+}
+
+// fileHandle is an instance of FileSystemFileHandle..
+async function writeFile(fileHandle, contents) {
+  // Create a FileSystemWritableFileStream to write to.
+  const writable = await fileHandle.createWritable();
+  // Write the contents of the file to the stream.
+  await writable.write(contents);
+  // Close the file and write the contents to disk.
+  await writable.close();
 }
 
 //https://web.dev/file-system-access/#read-file
