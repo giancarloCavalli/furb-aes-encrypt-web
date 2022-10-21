@@ -10,8 +10,16 @@ function encrypt(textAreaValue, keyRawValue) {
   const textInHexArray = get16ByteMatrixInColumnsArray(sixteenCharArray)
 
   const xorTextAndFirstRoundKey16ByteInHexArray = getXorBetweenTextAndRoundKey(textInHexArray, key['rk0'])
+  
+  const substitutedTextBytesInHexTwoLevelArray = getSubstitutedBytesInTwoLevelArray(xorTextAndFirstRoundKey16ByteInHexArray)
+  
+  console.log(substitutedTextBytesInHexTwoLevelArray)
+}
 
-  console.log('xorTextAndFirstRoundKey16ByteInHexArray', xorTextAndFirstRoundKey16ByteInHexArray)
+function getSubstitutedBytesInTwoLevelArray(twoLevelArrayOfBytesInHex) {
+  return twoLevelArrayOfBytesInHex.map(byteInHexArray => {
+    return getSubstitutedBytes(byteInHexArray)
+  })
 }
 
 function getXorBetweenTextAndRoundKey(text16ByteInHexArray, roundKey) {
@@ -99,8 +107,8 @@ function getRotatedBytes(wordArray) {
   return wordArray
 }
 
-function getSubstitutedBytes(wordInHexArray) {
-  return wordInHexArray.map(byte => S_BOX[byte])
+function getSubstitutedBytes(byteInHexArray) {
+  return byteInHexArray.map(byte => S_BOX[byte])
 }
 
 function generateRoundConstantWords() {
