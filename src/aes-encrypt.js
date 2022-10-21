@@ -2,14 +2,16 @@
 // Key schedule = array contendo todas as round keys
 // a key schedule é composta de 11 round keys de 4 words. A original + 10 derivadas
 
-function encrypt(textAreaValue) {
-  generateKey()
+function encrypt(textAreaValue, keyRawValue) {
+  generateKey(keyRawValue)
 
-  console.log(textAreaValue)
+  let sixteenCharArray = [...textAreaValue]
+
+  console.log(get16ByteMatrixInColumnsArray(sixteenCharArray))
 }
 
-function generateKey() {
-  let fullWordArray = keyInput.value.split(',')
+function generateKey(keyRawValue) {
+  let fullWordArray = keyRawValue.split(',')
   
   const key = {}
   
@@ -48,15 +50,20 @@ function getFirstWord(lastWordPrevRoundKey, roundConstantWord, firstWordPrevRoun
 }
 
 function getFirstRoundKey(fullWordArray) {
-  let wordInHexArray = []
+  const wordInHexArray = get16ByteMatrixInColumnsArray(fullWordArray)
+  return wordInHexArray
+}
 
-  while(fullWordArray.length > 0) {
-    const wordInDecArray = fullWordArray.splice(0, 4)
+function get16ByteMatrixInColumnsArray(sixteenElementArray) {
+  let byteInHexArray = []
 
-    wordInHexArray.push(wordInDecArray.map(byteInDecimal => getHexString(byteInDecimal)))
+  while(sixteenElementArray.length > 0) {
+    const wordInDecArray = sixteenElementArray.splice(0, 4)
+
+    byteInHexArray.push(wordInDecArray.map(byteInDecimal => getHexString(byteInDecimal)))
   }
 
-  return wordInHexArray
+  return byteInHexArray
 }
 
 function getRoundKey(firstWord, previousRoundKey) {
