@@ -45,14 +45,57 @@ function getShiftRows(twoLevelArrayOfBytesInHex) {
 }
 
 function getMixColumnsMatrix(twoLevelArrayOfBytesInHex) {
-  //TODO ajustar essa iteracao pois nao esta correta
+  //TODO Ajustar mix columns com a inclusao da E Table no processo
+  let resultMatrix = []
   for (let x = 0; x < twoLevelArrayOfBytesInHex.length; x++) {
-    
-    for (let y = 0; y < twoLevelArrayOfBytesInHex.length; y++) {
-      console.log(sumHexString(L_TABLE[twoLevelArrayOfBytesInHex[x][y]], L_TABLE[MULT_MATRIX[x][y]]))      
+    let r0
+    let r1
+    let i = 1
+    let xor00
+    let xor01
+    let xor10
+    let xor11
+    let xor20
+    let xor21
+    let xor30
+    let xor31
+    let firstB
+    let secondB
+    let thirdB
+    let fourthB
+
+    while (i < 4) {
+      if (i === 1) {
+        r0 = twoLevelArrayOfBytesInHex[x][i-1]
+        r1 = twoLevelArrayOfBytesInHex[x][i]
+        xor00 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[0][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[0][i]]))
+        xor10 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[1][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[1][i]]))
+        xor20 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[2][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[2][i]]))
+        xor30 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[3][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[3][i]]))
+      } else if (i === 3) {        
+        r0 = twoLevelArrayOfBytesInHex[x][i-1]
+        r1 = twoLevelArrayOfBytesInHex[x][i]
+        xor01 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[0][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[0][i]]))
+        xor11 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[1][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[1][i]]))
+        xor21 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[2][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[2][i]]))
+        xor31 = getXorBetweenHexStrings(sumHexString(L_TABLE[r0], L_TABLE[MULT_MATRIX[3][i-1]]), sumHexString(L_TABLE[r1], L_TABLE[MULT_MATRIX[3][i]]))
+        
+        firstB = getXorBetweenHexStrings(xor00, xor01)
+        secondB = getXorBetweenHexStrings(xor10, xor11)
+        thirdB = getXorBetweenHexStrings(xor20, xor21)
+        fourthB = getXorBetweenHexStrings(xor30, xor31)
+      }
+
+      i++
     }
+    resultMatrix.push([firstB, secondB, thirdB, fourthB])
+    // console.log('firstB', firstB)
+    // console.log('secondB', secondB)
+    // console.log('thirdB', thirdB)
+    // console.log('fourthB', fourthB)
   }
 
+  return resultMatrix
 }
 
 function sumHexString(hex1, hex2) {
@@ -213,6 +256,10 @@ function getXorInHexArrayBetween(wordInHexArray1, wordInHexArray2) {
   }
 
   return xorWordInHexArray
+}
+
+function getXorBetweenHexStrings(hex1, hex2) {
+  return getHexString(parseInt(hex1) ^ parseInt(hex2))
 }
 
 function getHexString(numberInStringOrChar) {
