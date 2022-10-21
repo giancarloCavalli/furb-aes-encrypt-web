@@ -3,11 +3,28 @@
 // a key schedule é composta de 11 round keys de 4 words. A original + 10 derivadas
 
 function encrypt(textAreaValue, keyRawValue) {
-  generateKey(keyRawValue)
+  const key = generateKey(keyRawValue)
 
   let sixteenCharArray = [...textAreaValue]
 
-  console.log(get16ByteMatrixInColumnsArray(sixteenCharArray))
+  const textInHexArray = get16ByteMatrixInColumnsArray(sixteenCharArray)
+
+  const xorTextAndFirstRoundKey16ByteInHexArray = getXorBetweenTextAndRoundKey(textInHexArray, key['rk0'])
+
+  console.log('xorTextAndFirstRoundKey16ByteInHexArray', xorTextAndFirstRoundKey16ByteInHexArray)
+}
+
+function getXorBetweenTextAndRoundKey(text16ByteInHexArray, roundKey) {
+  let xorTextAndFirstRoundKey16ByteInHexArray = []
+  
+  for (let i = 0; i < text16ByteInHexArray.length; i++) {
+    const textByteInHexColumn = text16ByteInHexArray[i];
+    const keyByteInHexColumn = roundKey[i];
+    
+    xorTextAndFirstRoundKey16ByteInHexArray.push(getXorInHexArrayBetween(textByteInHexColumn, keyByteInHexColumn))
+  }
+
+  return xorTextAndFirstRoundKey16ByteInHexArray
 }
 
 function generateKey(keyRawValue) {
@@ -17,25 +34,25 @@ function generateKey(keyRawValue) {
   
   let roundKey0 = getFirstRoundKey(fullWordArray)
 
-  key['w0'] = roundKey0
+  key['rk0'] = roundKey0
   
   let i = 1
   
   const roundConstantWords = generateRoundConstantWords()
   
   while (i <= 10) {
-    const copyOfLastWordFromPreviousRoundKey = key[`w${i-1}`][3].map(byteInHex => byteInHex)
-    const copyOfFirstWordFromPreviousRoundKey = key[`w${i-1}`][0].map(byteInHex => byteInHex)
+    const copyOfLastWordFromPreviousRoundKey = key[`rk${i-1}`][3].map(byteInHex => byteInHex)
+    const copyOfFirstWordFromPreviousRoundKey = key[`rk${i-1}`][0].map(byteInHex => byteInHex)
     const firstWord = getFirstWord(copyOfLastWordFromPreviousRoundKey, roundConstantWords[i], copyOfFirstWordFromPreviousRoundKey)
     
-    const previousRoundKey = key[`w${i-1}`]
+    const previousRoundKey = key[`rk${i-1}`]
     
-    key[`w${i}`] = getRoundKey(firstWord, previousRoundKey)
+    key[`rk${i}`] = getRoundKey(firstWord, previousRoundKey)
     
     i++
   }
 
-  console.log('key', key)
+  return key
 }
 
 function getFirstWord(lastWordPrevRoundKey, roundConstantWord, firstWordPrevRoundKey) {
