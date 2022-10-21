@@ -14,11 +14,16 @@ function encrypt(textAreaValue, keyRawValue) {
   let substitutedTextBytesInHexTwoLevelArray = getSubstitutedBytesInTwoLevelArray(xorTextAndFirstRoundKey16ByteInHexArray)
   
   //ATTENTION cause from this point forward the columns and lines are inverted!
-  const textBytesInHexShiftedRows = getShiftRows(substitutedTextBytesInHexTwoLevelArray)
+  const textBytesInHexShiftedRowsInverted = getShiftRows(substitutedTextBytesInHexTwoLevelArray)
   
+  console.log('textBytesInHexShiftedRowsInverted', textBytesInHexShiftedRowsInverted)
+  
+  //ATTENTION backverted
+  const textBytesInHexShiftedRows = getSameWithInvertedColsAndRows(textBytesInHexShiftedRowsInverted)
+
   console.log('textBytesInHexShiftedRows', textBytesInHexShiftedRows)
 
-  console.log(MULT_MATRIX)
+  console.log(getMixColumnsMatrix(textBytesInHexShiftedRows))
 }
 
 function getShiftRows(twoLevelArrayOfBytesInHex) {
@@ -37,6 +42,30 @@ function getShiftRows(twoLevelArrayOfBytesInHex) {
   })
 
   return shifted
+}
+
+function getMixColumnsMatrix(twoLevelArrayOfBytesInHex) {
+  //TODO ajustar essa iteracao pois nao esta correta
+  for (let x = 0; x < twoLevelArrayOfBytesInHex.length; x++) {
+    
+    for (let y = 0; y < twoLevelArrayOfBytesInHex.length; y++) {
+      console.log(sumHexString(L_TABLE[twoLevelArrayOfBytesInHex[x][y]], L_TABLE[MULT_MATRIX[x][y]]))      
+    }
+  }
+
+}
+
+function sumHexString(hex1, hex2) {
+  const number1 = parseInt(hex1, 16)
+  const number2 = parseInt(hex2, 16)
+
+  let result = number1 + number2
+
+  if (result > parseInt("ff", 16)) {
+    result - parseInt("ff", 16)
+  }
+
+  return getHexString(`${result}`)
 }
 
 function getSameWithInvertedColsAndRows(twoLevelArrayOfBytesInHex) {
@@ -227,10 +256,10 @@ const S_BOX = {
 }
 
 const MULT_MATRIX = [
-  [2, 3, 1, 1],
-  [1, 2, 3, 1],
-  [1, 1, 2, 3],
-  [3, 1, 1, 2]
+  ['02', '03', '01', '01'],
+  ['01', '02', '03', '01'],
+  ['01', '01', '02', '03'],
+  ['03', '01', '01', '02']
 ]
 
 const L_TABLE = {
