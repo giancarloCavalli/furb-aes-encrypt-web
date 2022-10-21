@@ -13,10 +13,12 @@ function encrypt(textAreaValue, keyRawValue) {
   
   let substitutedTextBytesInHexTwoLevelArray = getSubstitutedBytesInTwoLevelArray(xorTextAndFirstRoundKey16ByteInHexArray)
   
-  console.log('original', substitutedTextBytesInHexTwoLevelArray)
-
   //ATTENTION cause from this point forward the columns and lines are inverted!
-  console.log(getShiftRows(substitutedTextBytesInHexTwoLevelArray))
+  const textBytesInHexShiftedRows = getShiftRows(substitutedTextBytesInHexTwoLevelArray)
+  
+  console.log('textBytesInHexShiftedRows', textBytesInHexShiftedRows)
+
+  console.log(MULT_MATRIX)
 }
 
 function getShiftRows(twoLevelArrayOfBytesInHex) {
@@ -223,3 +225,10 @@ const S_BOX = {
   'e0': 'e1', 'e1': 'f8', 'e2': '98', 'e3': '11', 'e4': '69', 'e5': 'd9', 'e6': '8e', 'e7': '94', 'e8': '9b', 'e9': '1e', 'ea': '87', 'eb': 'e9', 'ec': 'ce', 'ed': '55', 'ee': '28', 'ef': 'df',
   'f0': '8c', 'f1': 'a1', 'f2': '89', 'f3': '0d', 'f4': 'bf', 'f5': 'e6', 'f6': '42', 'f7': '68', 'f8': '41', 'f9': '99', 'fa': '2d', 'fb': '0f', 'fc': 'b0', 'fd': '54', 'fe': 'bb', 'ff': '16'
 }
+
+const MULT_MATRIX = [
+  [2, 3, 1, 1],
+  [1, 2, 3, 1],
+  [1, 1, 2, 3],
+  [3, 1, 1, 2]
+]
