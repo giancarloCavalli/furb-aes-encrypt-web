@@ -1,4 +1,3 @@
-//https://stackoverflow.com/questions/13405129/create-and-save-a-file-with-javascript
 async function download(content) {
   if (isDownloadReady() === false) {
     alert("Informe a chave de criptografia para prosseguir com o download do arquivo cifrado!")
