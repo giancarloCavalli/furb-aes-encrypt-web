@@ -5,23 +5,49 @@
 function encrypt(textAreaValue, keyRawValue) {
   const key = generateKey(keyRawValue)
 
-  let sixteenCharArray = [...textAreaValue]
+  let charArray = [...textAreaValue]
+  charArray = getPad16(charArray)
 
-  const textInHexArray = get16ByteMatrixInColumnsArray(sixteenCharArray)
+  let textInHexArray = get16ByteMatrixInColumnsArray(charArray)
 
-  const xorTextAndFirstRoundKey16ByteInHexArray = getXorBetween16ByteTwoLevelArrays(textInHexArray, key['rk0'])
-  
-  let substitutedTextBytesInHexTwoLevelArray = getSubstitutedBytesInTwoLevelArray(xorTextAndFirstRoundKey16ByteInHexArray)
-  
-  //ATTENTION cause from this point forward the columns and lines are inverted!
-  const textBytesInHexShiftedRowsInverted = getShiftRows(substitutedTextBytesInHexTwoLevelArray)
-  
-  //ATTENTION backverted
-  const textBytesInHexShiftedRows = getSameWithInvertedColsAndRows(textBytesInHexShiftedRowsInverted)
+  let sixteenByteBlocksArray = []
 
-  let mixColumnsMatrix = getMixColumnsMatrix(textBytesInHexShiftedRows)
+  while (textInHexArray.length > 0) {
+    const array = textInHexArray.splice(0, 4)
+    sixteenByteBlocksArray.push(array)
+  }
+
+  let sixteenByteBlocksCyphered = []
+
+  let i = 0
+  while (i < sixteenByteBlocksArray.length) {
+    const xorTextAndFirstRoundKey16ByteInHexArray = getXorBetween16ByteTwoLevelArrays(sixteenByteBlocksArray[i], key['rk0'])
   
-  return getXorMixCollumnsAndRoundKeys(mixColumnsMatrix, key)
+    let substitutedTextBytesInHexTwoLevelArray = getSubstitutedBytesInTwoLevelArray(xorTextAndFirstRoundKey16ByteInHexArray)
+    
+    //ATTENTION cause from this point forward the columns and lines are inverted!
+    const textBytesInHexShiftedRowsInverted = getShiftRows(substitutedTextBytesInHexTwoLevelArray)
+    
+    //ATTENTION backverted
+    const textBytesInHexShiftedRows = getSameWithInvertedColsAndRows(textBytesInHexShiftedRowsInverted)
+  
+    let mixColumnsMatrix = getMixColumnsMatrix(textBytesInHexShiftedRows)
+
+    i++
+    
+    sixteenByteBlocksCyphered.push(getXorMixCollumnsAndRoundKeys(mixColumnsMatrix, key))
+  }
+
+  return sixteenByteBlocksCyphered
+}
+
+function getPad16(charArray) {
+  const diff = 16 - (charArray.length % 16)
+  for (let i = 0; i < diff; i++) {
+    charArray.push(`${diff}`)
+  }
+
+  return charArray
 }
 
 function getXorMixCollumnsAndRoundKeys(mixColumnsMatrix, keyTwoLevelArray) {
@@ -77,7 +103,7 @@ function getMixColumnsMatrix(twoLevelArrayOfBytesInHex) {
     let thirdB
     let fourthB
 
-    while (i < 4) {
+    while (i < twoLevelArrayOfBytesInHex.length) {
       if (i === 1) {
         r0 = twoLevelArrayOfBytesInHex[x][i-1]
         r1 = twoLevelArrayOfBytesInHex[x][i]
@@ -378,7 +404,7 @@ const E_TABLE = {
 
 function logAes(keyRawValue) {
   console.log('key', generateKey(keyRawValue))
-  console.log('Finale', getSameWithInvertedColsAndRows(encrypt(textAreaInput.value, keyInput.value)))
+  console.log('Finale', encrypt(textAreaInput.value, keyInput.value).map(hexMatrix => getSameWithInvertedColsAndRows(hexMatrix)))
 }
 
 function getSameWithInvertedColsAndRows(twoLevelArrayOfBytesInHex) {
@@ -402,9 +428,11 @@ function getCypher(textAreaValue, keyRawValue) {
   
   let cypherText = ''
 
-  matrix.forEach(hexArray => {
-    hexArray.forEach(hex => {
-      cypherText = cypherText.concat(hex)
+  matrix.forEach(hexArrayOfArrays => {
+    hexArrayOfArrays.forEach(hexArray => {
+      hexArray.forEach(hex => {
+        cypherText = cypherText.concat(hex)
+      })
     })
   })
 
