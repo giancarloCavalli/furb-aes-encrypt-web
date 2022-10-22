@@ -54,3 +54,26 @@ function isDownloadReady() {
 
   return true
 }
+
+function logAes(keyRawValue) {
+  console.log('key', generateKey(keyRawValue))
+  console.log('Finale', encrypt(textAreaInput.value, keyInput.value).map(hexMatrix => getSameWithInvertedColsAndRows(hexMatrix)))
+}
+
+function getCypher(textAreaValue, keyRawValue) {
+  const matrix = encrypt(textAreaValue, keyRawValue)
+  
+  let cypherText = ''
+
+  matrix.forEach(hexArrayOfArrays => {
+    hexArrayOfArrays.forEach(hexArray => {
+      hexArray.forEach(hex => {
+        cypherText = cypherText.concat(hex)
+      })
+    })
+  })
+
+  console.log('cypherText', cypherText)
+
+  return cypherText
+}
