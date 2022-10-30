@@ -20,6 +20,12 @@ async function getNewFileHandle() {
           'text/plain': ['.txt'],
         },
       },
+      {
+        description: 'Images',
+        accept: {
+          'image/*': ['.png', '.gif', '.jpeg', '.jpg']
+        }
+      },
     ],
   };
   const handle = await window.showSaveFilePicker(options);
@@ -37,14 +43,20 @@ async function writeFile(fileHandle, contents) {
 }
 
 //https://web.dev/file-system-access/#read-file
-async function openFile(){
+async function openFile(keyRawValue){
   let fileHandle;
   // Destructure the one-element array.
   [fileHandle] = await window.showOpenFilePicker();
   // Do something with the file handle.
   const file = await fileHandle.getFile();
+
+  const cypherContent = getCypher(await getAsByteArray(file), keyRawValue)
+
+  console.log('cypherContent', cypherContent)
+
+  saveFile(cypherContent)
+  
   const contents = await file.text();
-  console.log(contents);
   textAreaInput.value = contents;
 };
 
@@ -59,20 +71,73 @@ function logAes(keyRawValue) {
   console.log('Finale', encrypt(textAreaInput.value, keyInput.value).map(hexMatrix => getSameWithInvertedColsAndRows(hexMatrix)))
 }
 
-function getCypher(textAreaValue, keyRawValue) {
-  const matrix = encrypt(textAreaValue, keyRawValue)
+function getCypher(byteArray, keyRawValue) {
+  console.log('byteArray', byteArray)
+
+  const matrix = encrypt(byteArray, keyRawValue)
   
-  let cypherText = ''
+  let aesEncryptedBytes = []
 
   matrix.forEach(hexArrayOfArrays => {
     hexArrayOfArrays.forEach(hexArray => {
       hexArray.forEach(hex => {
-        cypherText = cypherText.concat(hex)
+        aesEncryptedBytes.push(hexToBytes(hex))
       })
     })
   })
 
-  console.log('cypherText', cypherText)
+  return aesEncryptedBytes  
+}
 
-  return cypherText
+async function saveFile(content) {
+  let rawData = [...content]
+  let blob = new Blob([new Uint8Array(rawData)],{type:'application/octet-stream'})
+
+  downloadBlob(blob, 'aes-encrypt.bin');
+}
+
+async function getAsByteArray(file) {
+  return new Uint8Array(await readFile(file))
+}
+
+function readFile(file) {
+  return new Promise((resolve, reject) => {
+    // Create file reader
+    let reader = new FileReader()
+
+    // Register event listeners
+    reader.addEventListener("loadend", e => resolve(e.target.result))
+    reader.addEventListener("error", reject)
+
+    // Read file
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+// Convert a hex string to a byte array
+function hexToBytes(hex) {
+  for (var bytes = [], c = 0; c < hex.length; c += 2) {
+    bytes.push(parseInt(hex.substr(c, 2), 16));
+  }
+
+  return bytes[0];
+}
+
+const downloadURL = (data, fileName) => {
+  const a = document.createElement('a')
+  a.href = data
+  a.download = fileName
+  document.body.appendChild(a)
+  a.style.display = 'none'
+  a.click()
+  a.remove()
+}
+
+const downloadBlob = (data, fileName) => {
+
+  const url = window.URL.createObjectURL(data)
+
+  downloadURL(url, fileName)
+
+  setTimeout(() => window.URL.revokeObjectURL(url), 1000)
 }

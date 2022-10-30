@@ -13,7 +13,7 @@
   <div class="section">
     <h2>Selecione um arquivo</h2>
     <div>
-      <button id="open-file-button" onclick="openFile()">Ler Arquivo</button>
+      <button id="open-file-button" onclick="openFile(keyInput.value)">Ler Arquivo</button>
     </div>
     <h2>Conteúdo</h2>
     <textarea id="text-area-input" class="text-area">DESENVOLVIMENTO!</textarea> <!-- TODO remover valor fixo-->
@@ -22,7 +22,7 @@
   <div class="section">
     <label for="key-input">
       Chave da criptografia:
-      <input type="text" id="key-input" name="key-input" value="A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P"> <!-- TODO remover valor fixo-->
+      <input type="text" id="key-input" name="key-input" value="65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80"> <!-- TODO remover valor fixo-->
     </label>
     <button id="save-file-button" onclick="download(getCypher(textAreaInput.value, keyInput.value))">Salvar Arquivo</button>
     <button id="log-aes-button">Log AES</button>
