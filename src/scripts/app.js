@@ -1,13 +1,15 @@
-async function download(content) {
+async function encryptAndDownload(keyRawValue) {
   if (isDownloadReady() === false) {
     alert("Informe a chave de criptografia para prosseguir com o download do arquivo cifrado!")
 
     return
   }
 
-  const fileHandle = await getNewFileHandle()
+  const cypherContent = getCypher(await getAsByteArray(file), keyRawValue)
 
-  await writeFile(fileHandle, content)
+  console.log('cypherContent', cypherContent)
+
+  saveFile(cypherContent)
 }
 
 async function getNewFileHandle() {
@@ -43,19 +45,13 @@ async function writeFile(fileHandle, contents) {
 }
 
 //https://web.dev/file-system-access/#read-file
-async function openFile(keyRawValue){
+async function openFile(){
   let fileHandle;
   // Destructure the one-element array.
   [fileHandle] = await window.showOpenFilePicker();
-  // Do something with the file handle.
-  const file = await fileHandle.getFile();
+  // file is declared in global-vars.js
+  file = await fileHandle.getFile();
 
-  const cypherContent = getCypher(await getAsByteArray(file), keyRawValue)
-
-  console.log('cypherContent', cypherContent)
-
-  saveFile(cypherContent)
-  
   const contents = await file.text();
   textAreaInput.value = contents;
 };
